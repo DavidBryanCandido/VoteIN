@@ -23,7 +23,7 @@ db.sqlite3
 *__pycache__*
 *.iml
 uwsgi.ini
-settings.py
+# settings.py
 /static_serve
 
 # OS #
