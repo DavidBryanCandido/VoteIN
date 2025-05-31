@@ -1,0 +1,30 @@
+# Code Editor (IntelliJ) #
+*.idea*
+
+# Code Editor (VS Code) #
+*.vscode*
+
+# Environments #
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# pyenv #
+.python-version
+
+# Databases #
+db.sqlite3
+
+# Project #
+*__pycache__*
+*.iml
+uwsgi.ini
+settings.py
+/static_serve
+
+# OS #
+.DS_Store
