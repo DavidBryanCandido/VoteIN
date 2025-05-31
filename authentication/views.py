@@ -6,12 +6,17 @@ from .serializers import RegisterSerializer, PositionSerializer, PartyListSerial
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
 from typing import Any
+from .rate_limit import rate_limit
 
 # Create your views here.
 
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = RegisterSerializer
+
+    @rate_limit('register', limit=3, period=60)
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 class ProtectedView(APIView):
     permission_classes = [permissions.IsAuthenticated]

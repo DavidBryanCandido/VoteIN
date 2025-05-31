@@ -92,8 +92,6 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.dummyaccesstoken
 
 ## Position
 
-
-
 -   **Create Position**
 
     -   `POST /api/auth/positions/`
@@ -142,7 +140,7 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.dummyaccesstoken
             }
         ]
         ```
-        
+
 -   **Retrieve Position**
 
     -   `GET /api/auth/positions/<id>/`
@@ -458,3 +456,17 @@ This API uses JWT for authentication. A valid token must be included in the `Aut
 ```
 Authorization: Bearer <your_jwt_token_here>
 ```
+
+# Rate Limiting
+
+Some endpoints (e.g., registration, login) are rate-limited.
+
+-   **Limit:** 3 requests per 60 seconds per IP/user.
+-   **Error Response:**
+    -   Status: 429 Too Many Requests
+    -   Body:
+        ```json
+        {
+            "detail": "Rate limit exceeded. Max 3 requests per 60 seconds."
+        }
+        ```

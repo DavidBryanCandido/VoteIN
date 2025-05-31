@@ -136,3 +136,10 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'authentication.CustomUser'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}
