@@ -82,10 +82,332 @@
 
 ---
 
+# CRUD API Endpoints
+
+All endpoints below require authentication via JWT. Add the header:
+
+```
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.dummyaccesstoken
+```
+
+## Position
+
+
+
+-   **Create Position**
+
+    -   `POST /api/auth/positions/`
+    -   **Request Body:**
+        ```json
+        {
+            "position_name": "Secretary",
+            "description": "Handles documentation and records",
+            "program": "BSCS",
+            "rank": 3
+        }
+        ```
+    -   **Response:** `201 Created`
+        ```json
+        {
+            "id": "<id>",
+            "position_name": "Secretary",
+            "description": "Handles documentation and records",
+            "program": "BSCS",
+            "rank": 3,
+            "created_at": "2024-06-01T12:10:00Z"
+        }
+        ```
+
+-   **List Positions**
+
+    -   `GET /api/auth/positions/`
+    -   **Response:**
+        ```json
+        [
+            {
+                "id": "<id>",
+                "position_name": "President",
+                "description": "Head of the student council",
+                "program": "ALL",
+                "rank": 1,
+                "created_at": "2024-06-01T12:00:00Z"
+            },
+            {
+                "id": "<id>",
+                "position_name": "Vice President",
+                "description": "Assists the President",
+                "program": "BSIT",
+                "rank": 2,
+                "created_at": "2024-06-01T12:05:00Z"
+            }
+        ]
+        ```
+        
+-   **Retrieve Position**
+
+    -   `GET /api/auth/positions/<id>/`
+    -   **Response:**
+        ```json
+        {
+            "id": "<id>",
+            "position_name": "President",
+            "description": "Head of the student council",
+            "program": "ALL",
+            "rank": 1,
+            "created_at": "2024-06-01T12:00:00Z"
+        }
+        ```
+
+-   **Update Position**
+
+    -   `PUT /api/auth/positions/a1b2c3d4-e5f6-7890-abcd-1234567890ef/`
+    -   **Request Body:**
+        ```json
+        {
+            "position_name": "President",
+            "description": "Leads the student council and represents students",
+            "program": "ALL",
+            "rank": 1
+        }
+        ```
+    -   **Response:** `200 OK`
+        ```json
+        {
+            "id": "a1b2c3d4-e5f6-7890-abcd-1234567890ef",
+            "position_name": "President",
+            "description": "Leads the student council and represents students",
+            "program": "ALL",
+            "rank": 1,
+            "created_at": "2024-06-01T12:00:00Z"
+        }
+        ```
+
+-   **Delete Position**
+    -   `DELETE /api/auth/positions/a1b2c3d4-e5f6-7890-abcd-1234567890ef/`
+    -   **Response:** `204 No Content`
+
+---
+
+## PartyList
+
+-   **List PartyLists**
+
+    -   `GET /api/auth/partylists/`
+    -   **Response:**
+        ```json
+        [
+            {
+                "id": "d4e5f6a1-b2c3-0123-dabc-4567890123ef",
+                "election": "e5f6a1b2-c3d4-1234-efab-5678901234cd",
+                "party_leader_name": "Jane Smith",
+                "party_name": "Unity Party",
+                "description": "A party for all students",
+                "vision": "Unity and Progress",
+                "mission": "Serve the students",
+                "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de",
+                "status": "pending",
+                "is_finalized": false
+            }
+        ]
+        ```
+
+-   **Create PartyList**
+
+    -   `POST /api/auth/partylists/`
+    -   **Request Body Example:**
+        ```json
+        {
+            "election": "e5f6a1b2-c3d4-1234-efab-5678901234cd",
+            "party_leader_name": "Jane Smith",
+            "party_name": "Unity Party",
+            "description": "A party for all students",
+            "vision": "Unity and Progress",
+            "mission": "Serve the students",
+            "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de",
+            "status": "pending",
+            "is_finalized": false
+        }
+        ```
+    -   **Response:** `201 Created`
+        ```json
+        {
+            "id": "d4e5f6a1-b2c3-0123-dabc-4567890123ef",
+            "election": "e5f6a1b2-c3d4-1234-efab-5678901234cd",
+            "party_leader_name": "Jane Smith",
+            "party_name": "Unity Party",
+            "description": "A party for all students",
+            "vision": "Unity and Progress",
+            "mission": "Serve the students",
+            "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de",
+            "status": "pending",
+            "is_finalized": false
+        }
+        ```
+
+-   **Retrieve PartyList**
+
+    -   `GET /api/auth/partylists/d4e5f6a1-b2c3-0123-dabc-4567890123ef/`
+    -   **Response:**
+        ```json
+        {
+            "id": "d4e5f6a1-b2c3-0123-dabc-4567890123ef",
+            "election": "e5f6a1b2-c3d4-1234-efab-5678901234cd",
+            "party_leader_name": "Jane Smith",
+            "party_name": "Unity Party",
+            "description": "A party for all students",
+            "vision": "Unity and Progress",
+            "mission": "Serve the students",
+            "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de",
+            "status": "pending",
+            "is_finalized": false
+        }
+        ```
+
+-   **Update PartyList**
+
+    -   `PUT /api/auth/partylists/d4e5f6a1-b2c3-0123-dabc-4567890123ef/`
+    -   **Request Body:**
+        ```json
+        {
+            "election": "e5f6a1b2-c3d4-1234-efab-5678901234cd",
+            "party_leader_name": "Jane Smith",
+            "party_name": "Unity Party",
+            "description": "A party for all students and faculty",
+            "vision": "Unity, Progress, and Service",
+            "mission": "Serve the students and faculty",
+            "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de",
+            "status": "approved",
+            "is_finalized": true
+        }
+        ```
+    -   **Response:** `200 OK`
+        ```json
+        {
+            "id": "d4e5f6a1-b2c3-0123-dabc-4567890123ef",
+            "election": "e5f6a1b2-c3d4-1234-efab-5678901234cd",
+            "party_leader_name": "Jane Smith",
+            "party_name": "Unity Party",
+            "description": "A party for all students and faculty",
+            "vision": "Unity, Progress, and Service",
+            "mission": "Serve the students and faculty",
+            "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de",
+            "status": "approved",
+            "is_finalized": true
+        }
+        ```
+
+-   **Delete PartyList**
+    -   `DELETE /api/auth/partylists/d4e5f6a1-b2c3-0123-dabc-4567890123ef/`
+    -   **Response:** `204 No Content`
+
+---
+
+## Election
+
+-   **List Elections**
+
+    -   `GET /api/auth/elections/`
+    -   **Response:**
+        ```json
+        [
+            {
+                "id": "e5f6a1b2-c3d4-1234-efab-5678901234cd",
+                "title": "2024 Student Council Election",
+                "description": "Annual election for student council",
+                "start_date": "2024-06-01T09:00:00Z",
+                "end_date": "2024-06-01T17:00:00Z",
+                "status": "scheduled",
+                "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de",
+                "created_at": "2024-05-20T10:00:00Z"
+            }
+        ]
+        ```
+
+-   **Create Election**
+
+    -   `POST /api/auth/elections/`
+    -   **Request Body Example:**
+        ```json
+        {
+            "title": "2024 Student Council Election",
+            "description": "Annual election for student council",
+            "start_date": "2024-06-01T09:00:00Z",
+            "end_date": "2024-06-01T17:00:00Z",
+            "status": "scheduled",
+            "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de"
+        }
+        ```
+    -   **Response:** `201 Created`
+        ```json
+        {
+            "id": "e5f6a1b2-c3d4-1234-efab-5678901234cd",
+            "title": "2024 Student Council Election",
+            "description": "Annual election for student council",
+            "start_date": "2024-06-01T09:00:00Z",
+            "end_date": "2024-06-01T17:00:00Z",
+            "status": "scheduled",
+            "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de",
+            "created_at": "2024-05-20T10:00:00Z"
+        }
+        ```
+
+-   **Retrieve Election**
+
+    -   `GET /api/auth/elections/e5f6a1b2-c3d4-1234-efab-5678901234cd/`
+    -   **Response:**
+        ```json
+        {
+            "id": "e5f6a1b2-c3d4-1234-efab-5678901234cd",
+            "title": "2024 Student Council Election",
+            "description": "Annual election for student council",
+            "start_date": "2024-06-01T09:00:00Z",
+            "end_date": "2024-06-01T17:00:00Z",
+            "status": "scheduled",
+            "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de",
+            "created_at": "2024-05-20T10:00:00Z"
+        }
+        ```
+
+-   **Update Election**
+
+    -   `PUT /api/auth/elections/e5f6a1b2-c3d4-1234-efab-5678901234cd/`
+    -   **Request Body:**
+        ```json
+        {
+            "title": "2024 Student Council Election",
+            "description": "Annual election for student council (updated)",
+            "start_date": "2024-06-01T09:00:00Z",
+            "end_date": "2024-06-01T17:00:00Z",
+            "status": "ongoing",
+            "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de"
+        }
+        ```
+    -   **Response:** `200 OK`
+        ```json
+        {
+            "id": "e5f6a1b2-c3d4-1234-efab-5678901234cd",
+            "title": "2024 Student Council Election",
+            "description": "Annual election for student council (updated)",
+            "start_date": "2024-06-01T09:00:00Z",
+            "end_date": "2024-06-01T17:00:00Z",
+            "status": "ongoing",
+            "created_by": "f6a1b2c3-d4e5-2345-fabc-6789012345de",
+            "created_at": "2024-05-20T10:00:00Z"
+        }
+        ```
+
+-   **Delete Election**
+    -   `DELETE /api/auth/elections/e5f6a1b2-c3d4-1234-efab-5678901234cd/`
+    -   **Response:** `204 No Content`
+
+---
+
 ## Error Handling
 
 -   Invalid credentials: `401 Unauthorized`
 -   Unauthorized access: `401 Unauthorized`
+-   Not found: `404 Not Found`
+-   Validation error: `400 Bad Request`
 
 ---
 
@@ -95,42 +417,44 @@
 -   All passwords are securely hashed.
 -   JWT tokens are used for authentication.
 
-Setup Instructions
-------------------
+## Setup Instructions
 
 1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/DavidBryanCandido/VoteIN.git
-   cd VoteIN
-   ```
+
+    ```bash
+    git clone https://github.com/DavidBryanCandido/VoteIN.git
+    cd VoteIN
+    ```
 
 2. **Install Dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 3. **Run Migrations:**
-   ```bash
-   python manage.py makemigrations
-   python manage.py migrate
-   ```
+
+    ```bash
+    python manage.py makemigrations
+    python manage.py migrate
+    ```
 
 4. **Run the Server:**
-   ```bash
-   python manage.py runserver
-   ```
+
+    ```bash
+    python manage.py runserver
+    ```
 
 5. **Test Endpoints:**
-   - Use Postman, or any REST client to test the endpoints.
-   - Start with the `/api/auth/register/` endpoint.
+    - Use Postman, or any REST client to test the endpoints.
+    - Start with the `/api/auth/register/` endpoint.
 
 ---
 
-Authentication
---------------
+## Authentication
+
 This API uses JWT for authentication. A valid token must be included in the `Authorization` header for protected routes. Example:
 
 ```
 Authorization: Bearer <your_jwt_token_here>
 ```
-

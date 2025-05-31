@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, Position, PartyList, Election
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -25,3 +25,18 @@ class RegisterSerializer(serializers.ModelSerializer):
             username=validated_data['student_id'],  # Use student_id as username
         )
         return user
+
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = '__all__'
+
+class PartyListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartyList
+        fields = '__all__'
+
+class ElectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Election
+        fields = '__all__'
