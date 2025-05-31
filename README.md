@@ -6,6 +6,7 @@
 
 -   **POST** `/api/auth/register/`
 -   **Request Body:**
+
     ```json
     {
         "student_id": "202312345",
@@ -16,6 +17,7 @@
         "confirm_password": "yourpassword"
     }
     ```
+
 -   **Response:**
     -   `201 Created`
     ```json
@@ -23,9 +25,14 @@
         "student_id": "202312345",
         "first_name": "John",
         "last_name": "Doe",
-        "email": "john.doe@example.com"
+        "email": "john.doe@example.com",
+        "photo_url": "/media/profile_pictures/202312345.jpg"
     }
     ```
+-   **Notes:**
+    -   Only JPEG, PNG, and WebP images are allowed.
+    -   Maximum file size: 2MB.
+    -   Image is automatically cropped to a 1:1 aspect ratio.
 
 ---
 
@@ -470,3 +477,94 @@ Some endpoints (e.g., registration, login) are rate-limited.
             "detail": "Rate limit exceeded. Max 3 requests per 60 seconds."
         }
         ```
+
+# File Upload Documentation
+
+## Profile Picture Upload
+
+The API supports profile picture uploads during user registration. The following features are implemented:
+
+### Supported File Types
+
+-   JPEG (.jpg, .jpeg)
+-   PNG (.png)
+-   WebP (.webp)
+
+### File Size Limits
+
+-   Maximum file size: 2MB
+-   Files exceeding this limit will be rejected with a validation error
+
+### Image Processing
+
+-   Images are automatically cropped to a 1:1 aspect ratio
+-   The crop is centered on the image
+-   Original image quality is preserved
+
+### Storage
+
+-   Files are stored in the `profile_pictures` directory
+-   File naming convention: `{student_id}.{extension}`
+-   Files are served through Django's media URL configuration
+
+### Error Handling
+
+The API will return appropriate error messages for:
+
+-   Invalid file types
+-   Files exceeding size limit
+-   Corrupted or invalid image files
+
+### Example Usage
+
+```python
+# Using Python requests
+import requests
+
+url = 'http://127.0.0.1:8000/api/auth/register/'
+files = {
+    'photo_url': ('profile.jpg', open('profile.jpg', 'rb'), 'image/jpeg')
+}
+data = {
+    'student_id': '202312345',
+    'first_name': 'John',
+    'last_name': 'Doe',
+    'email': 'john.doe@example.com',
+    'password': 'yourpassword',
+    'confirm_password': 'yourpassword'
+}
+
+response = requests.post(url, files=files, data=data)
+```
+
+### Response Example
+
+```json
+{
+    "student_id": "202312345",
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "photo_url": "/media/profile_pictures/202312345.jpg"
+}
+```
+
+### Configuration
+
+To enable file uploads, ensure the following settings are in your Django settings:
+
+```python
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'profile_pictures')
+```
+
+And in your URLs configuration:
+
+```python
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    # ... your URL patterns ...
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
