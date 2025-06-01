@@ -1,0 +1,400 @@
+{% load static %} 
+{% load authentication_extras %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Party Request | VoteIN</title>
+        <link
+            rel="stylesheet"
+            href="{% static 'css/student_dashboard_style.css' %}"
+        />
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <nav class="admin_nav">
+            <div class="container">
+                <div class="back_text_con">
+                    <a href="{% url 'student_dashboard' %}" class="back_text">
+                        <img
+                            src="{% static 'images/left_arrow_white.png' %}"
+                            alt=""
+                        />
+                        Back
+                    </a>
+                    <h1 class="dashboard-title">Party Request</h1>
+                </div>
+                <div style="display: flex; align-items: center">
+                    <div class="profile_con">
+                        <a href="{% url 'student_profile' %}">
+                            {% if user.photo_url %}
+                            <img
+                                src="{{ user.photo_url.url }}"
+                                alt="Profile Picture"
+                                class="profile_img"
+                            />
+                            {% else %}
+                            <img
+                                src="{% static 'images/user.png' %}"
+                                alt="Default Profile Picture"
+                                class="profile_img"
+                            />
+                            {% endif %}
+                        </a>
+                    </div>
+                    <span class="welcome-message"
+                        >Welcome, {{ user.first_name }} {{ user.last_name }}</span
+                    >
+                    <a href="{% url 'student_logout' %}" class="logout-link">
+                        <img src="{% static 'images/logout.png' %}" alt="->" />
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="party_request_container">
+            <div class="party_out_grid">
+                {% if party_exists %}
+                    <div class="party_grid">
+                        {% if positions %}
+                            <!-- Show "Send Requests" if party exists -->
+                            <div class="party_column request_con">
+                                <h2 class="party_h2_text">Send Requests</h2>
+                                <p class="party_p_text">
+                                    Send requests to members to join your party.
+                                </p>
+                                <form
+                                    action="{% url 'search_students' %}"
+                                    method="post"
+                                >
+                                    {% csrf_token %}
+                                    <div class="input-wrapper">
+                                        <input
+                                            type="text"
+                                            class="search"
+                                            name="search_term"
+                                            placeholder="Student Name or Student ID"
+                                            required
+                                        />
+                                        <button type="submit" class="search_btn_icon">
+                                            <img
+                                                src="{% static 'images/search_white.png' %}"
+                                                alt="Search Icon"
+                                                class="input-icon"
+                                            />
+                                        </button>
+                                    </div>
+                                </form>
+                                <!-- Send Member Request Form -->
+                                <form action="{% url 'send_member_request' %}" method="post">
+                                    {% csrf_token %}
+                                    <select name="position_id" class="position_name_select" required>
+                                        <option value="" class="party_name_option" disabled selected>
+                                            - - Select Member Position - -
+                                        </option>
+                                        {% for position in positions %}
+                                        <option
+                                            value="{{ position.id }}"
+                                            class="party_name_option"
+                                            {% if position.id in assigned_position_ids %}disabled{% endif %}
+                                        >
+                                            {{ position.position_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <div class="party_requested_user_con">
+                                        {% if search_results %}
+                                        {% for student in search_results %}
+                                        <div class="inner_party_con">
+                                            <img
+                                                class="party_requested_user"
+                                                src="{% if student.photo_url %}{{ student.photo_url.url }}{% else %}{% static 'images/user.png' %}{% endif %}"
+                                                alt="Profile"
+                                            />
+                                            <div
+                                                class="search_result_user"
+                                                style="width: 100%; display: flex; flex-direction: row; justify-content: space-between;"
+                                            >
+                                                <div class="span_con new_span_con">
+                                                    <span class="party_span">{{ student.first_name }} {{ student.last_name }}</span>
+                                                    <span class="party_span course">{{ student.program }}</span>
+                                                    <input type="hidden" name="party_id" value="{{ party_data.id }}" />
+                                                </div>
+                                                <button
+                                                    type="submit"
+                                                    name="requested_member_id"
+                                                    value="{{ student.id }}"
+                                                    class="party_request_btn"
+                                                    {%
+                                                    if
+                                                    student.id
+                                                    in
+                                                    requested_member_ids
+                                                    or
+                                                    student|check_pending_request:position:existing_requests_tuples
+                                                    %}disabled{%
+                                                    endif
+                                                    %}
+                                                >
+                                                    {% if student.id in requested_member_ids %} Request Sent {% else %} Send Request {% endif %}
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% else %}
+                                        <p>No results found. Try a different search term.</p>
+                                        {% endif %}
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Show 'Finalize Party' if a party exists -->
+                            <div class="party_column finalize">
+                                <h2 class="party_h2_text">Finalize Party</h2>
+                                <p class="party_p_text">
+                                    Finalize and submit your full party for approval
+                                </p>
+                                <!-- Display the election title -->
+                                <h2
+                                    style="
+                                        margin-top: 1rem;
+                                        text-align: center;
+                                        max-width: 500px;
+                                        text-overflow: ellipsis;
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                    "
+                                >
+                                    {{ election_title|default:'Unknown Election' }}
+                                </h2>
+                                <h1 class="party_name_h1">
+                                    {{ party_data.party_name }}
+                                </h1>
+                                <form
+                                    action="{% url 'finalize_party' %}"
+                                    method="post"
+                                    id="finalizePartyForm"
+                                >
+                                    {% csrf_token %}
+                                    <div class="party_member_finalize">
+                                        {% for position in positions %}
+                                        {% with assigned_member=position.assigned_member %}
+                                        <div class="inner_party_con member_finalize">
+                                            <img
+                                                class="party_requested_user"
+                                                src="{% if assigned_member and assigned_member.photo_url %}{{ assigned_member.photo_url.url }}{% else %}{% static 'images/user.png' %}{% endif %}"
+                                                alt="Profile"
+                                            />
+                                            <div class="span_con">
+                                                <span class="party_span">
+                                                    {% if assigned_member %}
+                                                    {{ assigned_member.first_name }} {{ assigned_member.last_name }}
+                                                    {% else %}
+                                                    No member assigned
+                                                    {% endif %}
+                                                </span>
+                                                <span class="party_span">
+                                                    <span
+                                                        class="party_span position_name_text"
+                                                    >
+                                                        <span class="span_text_bold"
+                                                            >Position:
+                                                        </span>
+                                                        {{ position.position_name }}
+                                                    </span>
+                                                </span>
+                                                <div class="span_span">
+                                                    <span class="span_text_bold">Program:</span>
+                                                    {% if assigned_member and assigned_member.program %}
+                                                        {{ assigned_member.program }}
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}
+                                                    <span class="party_span span_status">
+                                                        <span class="span_text_bold">Status:</span>
+                                                        {% if assigned_member %}
+                                                            {{ assigned_member.status }}
+                                                        {% else %}
+                                                            Unassigned
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                        {% endwith %}
+                                        {% empty %}
+                                        <p>No positions available.</p>
+                                        {% endfor %}
+                                        <button
+                                            type="submit"
+                                            id="submitButton"
+                                            class="create_party_btn"
+                                            {%
+                                            if
+                                            is_finalized
+                                            or
+                                            not
+                                            all_members_accepted
+                                            %}disabled
+                                            {%
+                                            endif
+                                            %}
+                                        >
+                                            Submit
+                                        </button>
+                                    </div>
+                                    <input
+                                        type="hidden"
+                                        name="party_id"
+                                        value="{{ party_data.id }}"
+                                    />
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="party_column" style="height: 100%; display: flex; justify-content: center; align-items: center;">
+                                <p>No positions available to recruit members for in your party.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <!-- Show 'Create Party' if no party exists -->
+                    <div class="party_column create_party_column">
+                        {% if not available_elections %}
+                            <p style="height: 100%;display: flex; justify-content: center; align-items: center;">No elections available to create a party.</p>
+                        {% else %}
+                            <h2>Create Party</h2>
+                            <p class="party_p_text">
+                                Create a new party to start adding members.
+                            </p>
+                            {% if messages %} {% for message in messages %}
+                            <div class="error-message">{{ message }}</div>
+                            {% endfor %} {% endif %}
+
+                            <form
+                                action="{% url 'student_create_party' %}"
+                                method="post"
+                            >
+                                {% csrf_token %}
+                                <div class="create_party_details">
+                                    <label for="party_leader_name"
+                                        >Party Leader Name</label
+                                    >
+                                    <input
+                                        class="create_party_input"
+                                        type="text"
+                                        id="party_leader_name"
+                                        value="{{ user.first_name }} {{ user.last_name }}"
+                                        disabled
+                                    />
+                                    <input
+                                        type="hidden"
+                                        name="party_leader_name"
+                                        value="{{ user.first_name }} {{ user.last_name }}"
+                                    />
+                                </div>
+                                <div class="create_party_details">
+                                    <label for="election_id">Select Election</label>
+                                    <select
+                                        class="create_party_input"
+                                        id="election_id"
+                                        name="election_id"
+                                        required
+                                    >
+                                        <option value="" disabled selected>
+                                            Select an election
+                                        </option>
+                                        {% for election in available_elections %}
+                                        <option value="{{ election.id }}">
+                                            {{ election.title }}
+                                        </option>
+                                        {% empty %}
+                                        <option value="" disabled>
+                                            No available elections
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="create_party_details">
+                                    <label for="party_name">Party Name</label>
+                                    <input
+                                        class="create_party_input"
+                                        type="text"
+                                        id="party_name"
+                                        name="party_name"
+                                        required
+                                    />
+                                </div>
+
+                                <!-- Mission -->
+                                <div class="create_party_details">
+                                    <label for="mission">Mission</label>
+                                    <textarea
+                                        class="create_party_input vission_mission_text_area"
+                                        id="mission"
+                                        name="mission"
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <!-- Vision -->
+                                <div class="create_party_details">
+                                    <label for="vision">Vision</label>
+                                    <textarea
+                                        class="create_party_input vission_mission_text_area"
+                                        id="vision"
+                                        name="vision"
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <div class="create_party_details">
+                                    <label for="description">Description</label>
+                                    <textarea
+                                        class="create_party_input create_party_textarea"
+                                        id="description"
+                                        name="description"
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <button type="submit" class="create_party_btn">
+                                    Create Party
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </body>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const submitButton = document.getElementById('submitButton');
+            const statusSpans = document.querySelectorAll('.span_status');
+
+                        const isFinalized = {% if is_finalized %}true{% else %}false{% endif %};
+            const checkStatus = () => {
+                let allAccepted = true;
+                statusSpans.forEach(span => {
+                    const statusText = span.textContent.trim().toLowerCase();
+                    if (!statusText.includes('accepted')) {
+                        allAccepted = false;
+                    }
+                });
+
+                // Disable button if party is finalized or not all members are accepted
+                submitButton.disabled = isFinalized || !allAccepted;
+            };
+
+            // Call this function on page load and after any updates
+            window.onload = checkStatus;
+
+        });
+    </script>
+</html>

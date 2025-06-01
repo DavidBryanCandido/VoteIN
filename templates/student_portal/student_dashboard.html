@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Student Dashboard | VoteIN</title>
+        <link
+            rel="stylesheet"
+            href="{% static 'css/student_dashboard_style.css' %}"
+        />
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="admin_nav">
+            <div class="container">
+                <div>
+                    <h1 class="dashboard-title">VoteIN Dashboard</h1>
+                </div>
+                <div style="display: flex; align-items: center">
+                    <div class="profile_con">
+                        <a href="{% url 'student_profile' %}">
+                            {% if user.photo_url %}
+                            <img
+                                src="{{ user.photo_url.url }}"
+                                alt="Profile Picture"
+                                class="profile_img"
+                            />
+                            {% else %}
+                            <img
+                                src="{% static 'images/user.png' %}"
+                                alt="Default Profile Picture"
+                                class="profile_img"
+                            />
+                            {% endif %}
+                        </a>
+                    </div>
+                    <span class="welcome-message"
+                        >Welcome, {{ user.first_name }} {{ user.last_name}}
+                    </span>
+                    <a href="{% url 'student_logout' %}" class="logout-link">
+                        <img src="{% static 'images/logout.png' %}" alt="->" />
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="recent-activity-container">
+            <!-- grid -->
+            <div class="grid_container">
+                <div class="grid_card">
+                    <div class="grid_card_in">
+                        <div class="grid_card_flex">
+                            <h2 class="grip_title_h2">Active Elections</h2>
+                            <img
+                                src="{% static 'images/vote_blue.png' %}"
+                                alt=""
+                                class="grid_title_icon"
+                            />
+                        </div>
+                        <p class="grid_text grid_p">
+                            View and participate in ongoing elections.
+                        </p>
+                        <br /><br />
+                        <a
+                            href="{% url 'student_all_elections' %}"
+                            class="grid_text grid_a"
+                        >
+                            View Elections
+                            <img
+                                src="{% static 'images/right_arrow_blue.png' %}"
+                                alt=""
+                            />
+                        </a>
+                    </div>
+                </div>
+                <div class="grid_card">
+                    <div class="grid_card_in">
+                        <div class="grid_card_flex">
+                            <h2 class="grip_title_h2">My Votes</h2>
+                            <img
+                                src="{% static 'images/checkmark_green.png' %}"
+                                alt=""
+                                class="grid_title_icon"
+                            />
+                        </div>
+                        <p class="grid_text grid_p">
+                            Check your voting history and see your current
+                            votes.
+                        </p>
+                        <br />
+                        <a
+                            href="{% url 'student_my_vote' %}"
+                            class="grid_text grid_a"
+                        >
+                            View History
+                            <img
+                                src="{% static 'images/right_arrow_blue.png' %}"
+                                alt=""
+                            />
+                        </a>
+                    </div>
+                </div>
+                <div class="grid_card">
+                    <div class="grid_card_in">
+                        <div class="grid_card_flex">
+                            <h2 class="grip_title_h2">Register Party</h2>
+                            <img
+                                src="{% static 'images/candidates_purple.png' %}"
+                                alt=""
+                                class="grid_title_icon"
+                            />
+                        </div>
+                        <p class="grid_text grid_p">
+                            Request party membership and register your party for
+                            upcoming elections.
+                        </p>
+                        <br />
+                        <a
+                            href="{% url 'student_party_request' %}"
+                            class="grid_text grid_a"
+                        >
+                            Register Now
+                            <img
+                                src="{% static 'images/right_arrow_blue.png' %}"
+                                alt=""
+                            />
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity-container mt-8">
+            <h2 class="section-title text-2xl font-semibold text-gray-800 mb-6">
+                Recent Activity
+            </h2>
+            <div class="activity-card bg-white rounded-lg shadow p-6">
+                <div class="activity-list space-y-4">
+                    {% if recent_votes %} {% for vote in recent_votes %}
+                    <div class="activity-item flex items-center space-x-4">
+                        <div class="activity-icon flex-shrink-0">
+                            <img
+                                class="check_img"
+                                src="{% static 'images/checkmark_green.png' %}"
+                                alt=""
+                            />
+                        </div>
+                        <div class="activity-details">
+                            <p
+                                class="activity-description text-sm text-gray-600"
+                            >
+                                Voted for
+                                <span class="font-medium"
+                                    >{{ vote.candidate_name }}</span
+                                >
+                                as
+                                <span class="font-medium"
+                                    >{{ vote.position }}</span
+                                >
+                                in
+                                <span class="font-medium"
+                                    >{{ vote.election_title }}</span
+                                >
+                            </p>
+                            <p class="activity-timestamp text-xs text-gray-500">
+                                {{ vote.timestamp|date:"M j, Y g:i A" }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %} {% else %}
+                    <p class="no-activity-message text-gray-600 text-center">
+                        No recent activity to display.
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

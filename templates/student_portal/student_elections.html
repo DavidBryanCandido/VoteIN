@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Active Elections - VoteIN</title>
+        <link rel="stylesheet" href="{% static 'css/student_styles.css' %}" />
+    </head>
+    <body>
+        <div class="container">
+            <h1>Active Elections</h1>
+            <div class="elections-grid">
+                {% if elections %} {% for election in elections %}
+                <div class="election-card">
+                    <h2>{{ election.title }}</h2>
+                    <p>{{ election.description }}</p>
+                    <div class="election-details">
+                        <p>
+                            <strong>Start:</strong> {{
+                            election.start_date|date:"M d, Y H:i" }}
+                        </p>
+                        <p>
+                            <strong>End:</strong> {{ election.end_date|date:"M
+                            d, Y H:i" }}
+                        </p>
+                    </div>
+                    <a href="#" class="vote-button">Vote Now</a>
+                </div>
+                {% endfor %} {% else %}
+                <p class="no-elections">No active elections at the moment.</p>
+                {% endif %}
+            </div>
+            <a href="{% url 'student_dashboard' %}" class="back-button"
+                >Back to Dashboard</a
+            >
+        </div>
+    </body>
+</html>

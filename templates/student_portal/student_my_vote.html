@@ -1,0 +1,89 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>My Votes | VoteIN</title>
+        <link
+            rel="stylesheet"
+            href="{% static 'css/student_dashboard_style.css' %}"
+        />
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <nav class="admin_nav">
+            <div class="container">
+                <div class="back_text_con">
+                    <a href="{% url 'student_dashboard' %}" class="back_text">
+                        <img
+                            src="{% static 'images/left_arrow_white.png' %}"
+                            alt=""
+                        />
+                        Back
+                    </a>
+                    <h1 class="dashboard-title">My Votes</h1>
+                </div>
+                <div style="display: flex; align-items: center">
+                    <div class="profile_con">
+                        <a href="{% url 'student_profile' %}">
+                            {% if user.photo_url %}
+                            <img
+                                src="{{ user.photo_url.url }}"
+                                alt="Profile Picture"
+                                class="profile_img"
+                            />
+                            {% else %}
+                            <img
+                                src="{% static 'images/user.png' %}"
+                                alt="Default Profile Picture"
+                                class="profile_img"
+                            />
+                            {% endif %}
+                        </a>
+                    </div>
+                    <span class="welcome-message">
+                        Welcome, {{ user.first_name }} {{ user.last_name}}
+                    </span>
+                    <a href="{% url 'student_logout' %}" class="logout-link">
+                        <img src="{% static 'images/logout.png' %}" alt="->" />
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <!-- Main Content -->
+        <div class="student_my_vote_container">
+            <h1 class="main_heading">Voting History</h1>
+            <div class="vote_history_con">
+                {% if my_votes %} {% for vote in my_votes %}
+                <div class="vote_history_card">
+                    <p class="vote_info">
+                        Voted for
+                        <span class="candidate_name_span"
+                            >{{ vote.candidate_name }}</span
+                        >
+                        as
+                        <span class="position_name_span"
+                            >{{ vote.position }}</span
+                        >
+                        in
+                        <span class="election_title_span"
+                            >{{ vote.election_title }}</span
+                        >
+                    </p>
+                    <p class="vote_info vote_info_time">
+                        {{ vote.timestamp|date:'M j, Y h:i A' }}
+                    </p>
+                </div>
+                {% endfor %} {% else %}
+                <p class="no_history_message">
+                    You have not voted in any elections yet.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </body>
+</html>

@@ -22,11 +22,12 @@ class CustomUser(AbstractUser):
     remember_token = models.CharField(max_length=255, null=True, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
-    photo_url = models.ImageField(upload_to='profile_pictures/', default='profile_pictures/default_user_profile2.png')
+    photo_url = models.ImageField(upload_to='uploads/', default='images/user.png', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.email
+
 
 # Positions Model
 class Position(models.Model):

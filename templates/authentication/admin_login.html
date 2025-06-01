@@ -1,0 +1,192 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Admin Login - VoteIN</title>
+        <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}" />
+    </head>
+
+    <body>
+        <div class="admin_main">
+            <div class="admin_login_left">
+                <div class="admin_left_con">
+                    <img
+                        src="{% static 'images/admin_login_icon.png' %}"
+                        alt="Admin Login Icon"
+                    />
+                    <h1 style="color: #f0f8ff">Admin Portal</h1>
+                    <p>Manage and oversee the student voting system securely</p>
+                    <div class="cent">
+                        <div class="login_left_icons">
+                            <img
+                                src="{% static 'images/checkmark.png' %}"
+                                alt=""
+                            />
+                            <p>Monitor Election Progress</p>
+                        </div>
+                        <div class="login_left_icons">
+                            <img
+                                src="{% static 'images/student_login_icon.png' %}"
+                                alt=""
+                            />
+                            <p>Manage Student Accounts</p>
+                        </div>
+                        <div class="login_left_icons">
+                            <img src="{% static 'images/stats.png' %}" alt="" />
+                            <p>View Real-time Results</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="admin_login_right">
+                <div class="login-wrapper">
+                    <!-- Logo and Title for Mobile -->
+                    <div class="logo-title-mobile">
+                        <i class="icon-shield"></i>
+                        <h1 class="title-admin-portal">Admin Portal</h1>
+                    </div>
+
+                    <!-- Error Message Container -->
+                    <div id="errorContainer" class="error-container">
+                        <p id="errorMessage" class="error-message">
+                            {% if messages %} {% for message in messages %} {{
+                            message }} {% endfor %} {% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Login Form -->
+                    <div class="form-container">
+                        <form
+                            id="loginForm"
+                            class="form-spacing"
+                            method="POST"
+                            action="{% url 'admin_login_custom' %}"
+                        >
+                            {% csrf_token %}
+                            <!-- Username/ID -->
+                            <div>
+                                <label for="email" class="label">Email</label>
+                                <div class="input-container">
+                                    <img
+                                        class="icon-input"
+                                        src="{% static 'images/user.png' %}"
+                                        alt="User Icon"
+                                    />
+                                    <input
+                                        type="text"
+                                        id="email"
+                                        name="email"
+                                        required
+                                        class="input-field"
+                                        placeholder="Enter your email"
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Password -->
+                            <div>
+                                <label for="password" class="label"
+                                    >Password</label
+                                >
+                                <div class="input-container">
+                                    <img
+                                        class="icon-input"
+                                        src="{% static 'images/lock.png' %}"
+                                        alt=""
+                                    />
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        required
+                                        class="input-field"
+                                        placeholder="Enter your password"
+                                    />
+                                    <button
+                                        type="button"
+                                        id="togglePassword"
+                                        class="toggle-password"
+                                    >
+                                        <img
+                                            src="{% static 'images/close_eye.png' %}"
+                                            alt="Toggle Password"
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Remember Me (Django will handle session based on settings) -->
+                            <div class="remember-me-container">
+                                <div>
+                                    <input
+                                        type="checkbox"
+                                        id="remember_me"
+                                        name="remember_me"
+                                        class="checkbox"
+                                    />
+                                    <label
+                                        for="remember_me"
+                                        class="label-remember"
+                                        >Remember me</label
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Login Button -->
+                            <button
+                                type="submit"
+                                id="loginButton"
+                                class="login-button"
+                            >
+                                <img
+                                    src="{% static 'images/login.png' %}"
+                                    alt=""
+                                />
+                                Sign in
+                            </button>
+                        </form>
+                    </div>
+
+                    {% comment %}
+                    <!-- Back to Student Login -->
+                    <div class="back-link-container">
+                        <a href="{% url 'student_login' %}" class="back-link">
+                            <img
+                                src="{% static 'images/student_grey.png' %}"
+                                class="fa-arrow-left"
+                            />
+                            Student Login
+                        </a>
+                    </div>
+                    {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const toggleImage = togglePassword.querySelector('img');
+
+            if (togglePassword && passwordInput && toggleImage) {
+                togglePassword.addEventListener('click', () => {
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        toggleImage.src = '{% static 'images/open_eye.png' %}'; // Change to open eye
+                    } else {
+                        passwordInput.type = 'password';
+                        toggleImage.src = '{% static 'images/close_eye.png' %}'; // Change to closed eye
+                    }
+                });
+            } else {
+                console.error("Required elements not found.");
+            }
+        });
+        // Removed jQuery AJAX logic as Django forms will handle direct POST for now.
+        // If AJAX login is needed, it will require a separate implementation.
+    </script>
+</html>

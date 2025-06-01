@@ -1,0 +1,391 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pollify | Admin Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="admin_nav">
+        <div class="container">
+            <div>
+                <h1 class="dashboard-title">Admin Dashboard</h1>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span class="welcome-message">Welcome, 
+                    {# Removed this section to handle welcome message via JavaScript alert #}
+                    
+                    {% if request.user.is_authenticated and request.user.role == 'admin' and not request.user.first_name and not request.user.last_name %}
+                        Administrator
+                    {% else %}
+                        {{ request.user.get_full_name|default:request.user.email }}
+                    {% endif %}
+                    
+                </span>
+                <a href="{% url 'admin_logout' %}" class="logout-link">
+                    <img src="{% static 'images/logout.png' %}" alt="->"> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="admin_main_container">
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+
+            <!-- Active Elections -->
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-flex">
+                        <div class="icon-container green">
+                            <img class="fas fa-users icon" src="{% static 'images/vote2.png' %}" alt="">
+                        </div>
+                        <div class="card-details">
+                            <dl>
+                                <dt class="card-title">Current Elections</dt>
+                                <dd class="card-value">{{ active_elections_count }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Candidates -->
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-flex">
+                        <div class="icon-container purple">
+                            <img class="fas fa-users icon" src="{% static 'images/candidates.png' %}" alt="">
+                        </div>
+                        <div class="card-details">
+                            <dl>
+                                <dt class="card-title">Total Candidates</dt>
+                                <dd class="card-value">{{ total_candidates }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Students -->
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-flex">
+                        <div class="icon-container">
+                            <img class="fas fa-users icon" src="{% static 'images/users.png' %}" alt="">
+                        </div>
+                        <div class="card-details">
+                            <dl>
+                                <dt class="card-title">Total Students</dt>
+                                <dd class="card-value">{{ total_students }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions-card">
+            <div class="quick-actions-content">
+                <h3 class="quick-actions-title">Quick Actions</h3>
+                <div class="actions-grid">
+                    <a href="{% url 'admin_create_election' %}" class="action-button green">
+                        <img class="fas fa-plus action-icon" src="{% static 'images/plus.png' %}" alt="+">
+                        Create New Election
+                    </a>
+                    <a href="{% url 'admin_manage_party' %}" class="action-button purple">
+                        <img class="fas fa-plus action-icon" src="{% static 'images/M_candidates.png' %}" alt="+"> Manage Party
+                    </a>
+                    <a href="{% url 'admin_manage_student' %}" class="action-button blue">
+                        <img class="fas fa-plus action-icon" src="{% static 'images/student_icon.png' %}" alt="+"> Manage Students
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Elections Display -->
+        <div class="election-display">
+
+
+            <!-- Active Elections -->
+            <div class="active-election-content">
+                <h2>Current Elections</h2>
+                {% if messages %}
+                    <ul class="messages" style="margin:10px 0; list-style: none;">
+                        {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="color: #2b6cb0;">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if active_elections %}
+                    <ul class="election-list">
+                        {% for election in active_elections %}
+                            <li class="election-item">
+                                <div class="election-details">
+                                    <h3 class="election-title">{{ election.title }}</h3>
+                                    <p class="election-date-time">Start: {{ election.start_date|date:'Y-m-d' }}
+                                        <span class="time-divider" style="border-left: 1px solid #ccc; margin: 0 8px; padding-left: 8px;">
+                                            {{ election.start_date|time:'h:i A' }}
+                                        </span>
+                                    </p>
+                                    <p class="election-date-time">End: {{ election.end_date|date:'Y-m-d' }}
+                                        <span class="time-divider" style="border-left: 1px solid #ccc; margin: 0 8px; padding-left: 8px;">
+                                            {{ election.end_date|time:'h:i A' }}
+                                        </span>
+                                    </p>
+
+                                </div>
+                                <!-- Edit and Manage Buttons -->
+                                <div class="election-actions">
+                                    <button
+                                        class="btn-edit"
+                                        onclick="openEditModal(
+                                            '{{ election.id }}', 
+                                            '{{ election.title|escapejs }}', 
+                                            '{{ election.description|escapejs }}', 
+                                            '{{ election.start_date|date:'Y-m-d H:i' }}', 
+                                            '{{ election.end_date|date:'Y-m-d H:i' }}',
+                                            '{{ election.status }}'
+                                        )">
+                                        Edit
+                                    </button>
+
+                                    <a href="{% url 'admin_manage_result' election.id %}" class="btn-manage">
+                                        Manage Election
+                                    </a>
+                                </div>
+                            </li>
+
+                        {% endfor %}
+                    </ul>
+
+                {% else %}
+                    <p class="no-elections">No active elections found.</p>
+                {% endif %}
+            </div>
+
+            <!-- Completed Elections -->
+            <div class="completed-election-content">
+                <h2>Completed Elections</h2>
+                {% if completed_elections %}
+                    <ul class="election-list">
+                        {% for election in completed_elections %}
+                            <li class="election-item">
+                                <div class="election-details">
+                                    <h3 class="election-title">{{ election.title }}</h3>
+                                    <p class="election-date-time">Start: {{ election.start_date|date:'Y-m-d' }}
+                                        <span class="time-divider" style="border-left: 1px solid #ccc; margin: 0 8px; padding-left: 8px;">
+                                            {{ election.start_date|time:'h:i A' }}
+                                        </span>
+                                    </p>
+                                    <p class="election-date-time">End: {{ election.end_date|date:'Y-m-d' }}
+                                        <span class="time-divider" style="border-left: 1px solid #ccc; margin: 0 8px; padding-left: 8px;">
+                                            {{ election.end_date|time:'h:i A' }}
+                                        </span>
+                                    </p>
+
+                                </div>
+                                <!-- Edit and Manage Buttons -->
+                                <div class="election-actions">
+                                    <button
+                                        class="btn-edit"
+                                        onclick="openEditModal(
+                                            '{{ election.id }}', 
+                                            '{{ election.title|escapejs }}', 
+                                            '{{ election.description|escapejs }}', 
+                                            '{{ election.start_date|date:'Y-m-d H:i' }}', 
+                                            '{{ election.end_date|date:'Y-m-d H:i' }}',
+                                            '{{ election.status }}'
+                                        )">
+                                        Edit
+                                    </button>
+
+                                    <a href="{% url 'admin_manage_result' election.id %}" class="btn-manage">
+                                        Manage Election
+                                    </a>
+                                </div>
+                            </li>
+
+                        {% endfor %}
+                    </ul>
+
+                {% else %}
+                    <p class="no-elections">No completed elections found.</p>
+                {% endif %}
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+    <!-- Modal for Editing Election -->
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>Edit Election</h2>
+            <form id="editElectionForm" action="{% url 'admin_update_election' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="election_id" name="id">
+                <div class="form-group">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" id="title" name="title" required class="form-input t_d">
+                </div>
+                <div class="form-group">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea id="description2" name="description" required class="form-input t_d" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <div class="form-grid">
+                        <div>
+                            <label for="start_datetime" class="form-label">Start Date & Time</label>
+                            <div class="datetime-wrapper">
+                                <div class="callendar-icon-container">
+                                    <span class="calendar-icon">📅</span>
+                                </div>
+                                <input type="date" id="start_date" name="start_date" class="form-input">
+                                <input type="time" id="start_time" name="start_time" class="form-input">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="end_datetime" class="form-label">End Date & Time</label>
+                            <div class="datetime-wrapper">
+                                <div class="callendar-icon-container">
+                                    <span class="calendar-icon">📅</span>
+                                </div>
+                                <input type="date" id="end_date" name="end_date" class="form-input">
+                                <input type="time" id="end_time" name="end_time" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="save_and_status">
+                    <div class="form-group-2">
+                        <label for="status" class="form-label">Status</label>
+                        <select id="status" name="status" class="form-input">
+                            <option value="scheduled">Scheduled</option>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-save">Save Changes</button>
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+
+
+</body>
+<style>
+    .toast-message {
+        visibility: hidden;
+        min-width: 250px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 5px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1000;
+        right: 30px;
+        top: 30px;
+        font-size: 17px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transition: opacity 0.5s, top 0.5s;
+    }
+
+    .toast-message.show {
+        visibility: visible;
+        opacity: 1;
+        top: 30px;
+    }
+</style>
+<script>
+    // JavaScript for Welcome Message Alert
+    document.addEventListener('DOMContentLoaded', function() {
+        const welcomeMessage = "{{ admin_welcome_message|escapejs }}";
+        const toastElement = document.createElement('div');
+        toastElement.classList.add('toast-message');
+        toastElement.textContent = welcomeMessage;
+        document.body.appendChild(toastElement);
+
+        if (welcomeMessage) {
+            // Show the toast after a short delay to ensure page fully loads
+            setTimeout(() => {
+                toastElement.classList.add('show');
+                // Make an AJAX call to clear the message from the session
+                fetch('{% url 'clear_admin_welcome_message' %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken') // Assuming you have a getCookie function for CSRF token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log("Welcome message cleared from session.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error clearing welcome message:", error);
+                });
+
+                // Hide the toast after 5 seconds
+                setTimeout(() => {
+                    toastElement.classList.remove('show');
+                    setTimeout(() => toastElement.remove(), 500); // Remove from DOM after fade out
+                }, 5000);
+            }, 500); // 500ms delay before showing toast
+        }
+    });
+
+    // Function to get CSRF token (add this if not already present in your JS)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function openEditModal(id, title, description, startDate, endDate, status) {
+        document.getElementById('election_id').value = id;
+        document.getElementById('title').value = title;
+        document.getElementById('description2').value = description;
+        document.getElementById('start_date').value = startDate.split(' ')[0];
+        document.getElementById('start_time').value = startDate.split(' ')[1] || '';
+        document.getElementById('end_date').value = endDate.split(' ')[0];
+        document.getElementById('end_time').value = endDate.split(' ')[1] || '';
+        document.getElementById('status').value = status;
+
+        document.getElementById('editModal').style.display = 'block';
+    }
+
+
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+</script>
+
+</html>

@@ -1,0 +1,378 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Student Profile | VoteIN</title>
+        <link
+            rel="stylesheet"
+            href="{% static 'css/student_dashboard_style.css' %}"
+        />
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <nav class="admin_nav">
+            <div class="container">
+                <div class="back_text_con">
+                    <a href="{% url 'student_dashboard' %}" class="back_text">
+                        <img
+                            src="{% static 'images/left_arrow_white.png' %}"
+                            alt=""
+                        />
+                        Back
+                    </a>
+                    <h1 class="dashboard-title">Student Profile</h1>
+                </div>
+                <div style="display: flex; align-items: center">
+                    <div class="profile_con">
+                        <a href="{% url 'student_profile' %}">
+                            {% if user.photo_url %}
+                            <img
+                                src="{{ user.photo_url.url }}"
+                                alt="Profile Picture"
+                                class="profile_img"
+                            />
+                            {% else %}
+                            <img
+                                src="{% static 'images/user.png' %}"
+                                alt="Default Profile Picture"
+                                class="profile_img"
+                            />
+                            {% endif %}
+                        </a>
+                    </div>
+                    <span class="welcome-message"
+                        >Welcome, {{ user.first_name }} {{ user.last_name}}
+                    </span>
+                    <a href="{% url 'student_logout' %}" class="logout-link">
+                        <img src="{% static 'images/logout.png' %}" alt="->" />
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="student_profile_container">
+            <div class="grid_profile_container">
+                {% if user.partylist_id and party_members %}
+                <!-- Display Party Members -->
+                <div class="grid_profile_card div1">
+                    <div class="grid_profile_card_in">
+                        <div class="profile_Members_con">
+                            <h2 class="h2_title">Your Party Members</h2>
+                            <p
+                                style="
+                                    font-style: italic;
+                                    margin-top: 5px;
+                                    text-align: center;
+                                "
+                            >
+                                {{ party_name }}
+                            </p>
+                        </div>
+                        <div class="outer_vertical_scroll_con">
+                            <div class="vertical_scroll_con">
+                                {% for item in party_members %}
+                                    <div class="grid_profile_party_request_con">
+                                        <div class="grid_profile_party_img_con">
+                                            <img src="{{ item.member.photo_url.url }}" alt="" class="grid_profile_party_img" />
+                                        </div>
+                                        <div class="grid_profile_party_details">
+                                            <p class="grid_profile_party_details_p requester_name_text">
+                                                {{ item.member.first_name }} {{ item.member.last_name }}
+                                            </p>
+                                            <p class="grid_profile_party_details_p">
+                                                {{ item.position }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif party_requests %}
+                <!-- Display Party Requests -->
+                <div class="grid_profile_card div1">
+                    <div class="grid_profile_card_in">
+                        <div class="profile_title_con">
+                            <h2 class="h2_title">Party Requests</h2>
+                        </div>
+                        {% for request_item in party_requests %}
+                        <div class="grid_profile_party_request_con">
+                            <div class="grid_profile_party_t_b">
+                                <div class="grid_profile_party_img_con">
+                                    <img
+                                        src="{{ request_item.photo_url.url }}"
+                                        alt=""
+                                        class="grid_profile_party_img"
+                                    />
+                                </div>
+                                <div class="grid_profile_party_details">
+                                    <p
+                                        class="grid_profile_party_details_p requester_name_text"
+                                    >
+                                        {{ request_item.requester.first_name }}
+                                        {{ request_item.requester.last_name }}
+                                    </p>
+                                    <p class="grid_profile_party_details_p">
+                                        Party Name:
+                                        {{request_item.party.party_name }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div
+                                class="grid_profile_party_t_b grid_profile_party_bottom"
+                            >
+                                {% if messages %} {% for message in messages %}
+                                <div
+                                    id="error-message"
+                                    style="
+                                        margin-bottom: 1rem;
+                                        color: red;
+                                        font-size: 14px;
+                                        font-style: italic;
+                                    "
+                                >
+                                    {{ message }}
+                                </div>
+                                {% endfor %} {% endif %}
+                                <form
+                                    action="{% url 'handle_party_request' %}"
+                                    method="post"
+                                    style="display: inline"
+                                >
+                                    {% csrf_token %}
+                                    <input
+                                        type="hidden"
+                                        name="request_id"
+                                        value="{{ request_item.id }}"
+                                    />
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="reject"
+                                    />
+                                    <button
+                                        type="submit"
+                                        
+                                        class="status_party_btn status_party_btn_reject"
+                                    >
+                                        Reject
+                                    </button>
+                                </form>
+                                <form action="{% url 'handle_party_request' %}" method="post" style="display: inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="request_id" value="{{ request_item.id }}" />
+                                    <input type="hidden" name="action" value="accept" />
+                                    <button type="submit" class="status_party_btn status_party_btn_accept">Accept</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- General Content -->
+                <div class="grid_profile_card div2">
+                    <form
+                        id="profileEditForm"
+                        action="{% url 'student_update_profile' %}"
+                        method="post"
+                        enctype="multipart/form-data"
+                    >
+                        {% csrf_token %}
+                        <div class="grid_profile_card_in">
+                            <div class="profile_title_con">
+                                <h2 class="h2_title">Profile</h2>
+                            </div>
+                            <div class="parent">
+                                <div class="user_profile_top user_div1">
+                                    <div class="user_profile_con">
+                                        {% if user.photo_url %}
+                                        <img
+                                            src="{{ user.photo_url.url }}"
+                                            alt="Profile Picture"
+                                            class="user_profile_img"
+                                        />
+                                        {% else %}
+                                        <img
+                                            src="{% static 'images/user.png' %}"
+                                            alt="Default Profile Picture"
+                                            class="user_profile_img"
+                                        />
+                                        {% endif %}
+                                    </div>
+                                    <label
+                                        for="profilePhoto"
+                                        class="photo_upload_label"
+                                        id="changePhotoLabel"
+                                        style="
+                                            pointer-events: none;
+                                            opacity: 0.5;
+                                        "
+                                        >Change Profile</label
+                                    >
+
+                                    <input
+                                        type="file"
+                                        name="profilePhoto"
+                                        id="profilePhoto"
+                                        accept="image/*"
+                                        style="display: none"
+                                    />
+                                    <span
+                                        style="
+                                            text-align: center;
+                                            margin-top: 0.5rem;
+                                        "
+                                        >Student ID: {{ user.student_id }}</span
+                                    >
+                                    <button
+                                        type="button"
+                                        id="editProfileBtn"
+                                        style="pointer-events: auto !important"
+                                    >
+                                        Edit Profile
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        id="saveProfileBtn"
+                                        style="display: none"
+                                    >
+                                        Save Edit
+                                    </button>
+                                </div>
+                                <div class="user_div2">
+                                    <label for="firstname">First Name</label>
+                                    <input
+                                        class="input-field user_div2_input"
+                                        type="text"
+                                        name="firstname"
+                                        id="firstname"
+                                        value="{{ user.first_name }}"
+                                        disabled
+                                    />
+
+                                    <label for="lastname">Last Name</label>
+                                    <input
+                                        class="input-field user_div2_input"
+                                        type="text"
+                                        name="lastname"
+                                        id="lastname"
+                                        value="{{ user.last_name }}"
+                                        disabled
+                                    />
+
+                                    <label for="email">Email</label>
+                                    <input
+                                        class="input-field user_div2_input"
+                                        type="email"
+                                        name="email"
+                                        id="email"
+                                        value="{{ user.email }}"
+                                        autocomplete="FALSE"
+                                        disabled
+                                    />
+
+                                    <label for="program">Program</label>
+                                    <input
+                                        class="input-field user_div2_input"
+                                        type="text"
+                                        name="program"
+                                        id="program"
+                                        value="{{ user.program }}"
+                                        disabled
+                                    />
+
+                                    <label for="year_level">Year Level</label>
+                                    <input
+                                        class="input-field user_div2_input"
+                                        type="text"
+                                        name="year_level"
+                                        id="year_level"
+                                        value="{{ user.year_level }}"
+                                        disabled
+                                    />
+                                </div>
+                                <div class="user_div3">
+                                    <div style="margin-bottom: 1rem">
+                                        <label for="password" class="form-label"
+                                            >New Password</label
+                                        >
+                                        <div class="input-container">
+                                            <img
+                                                class="icon-input"
+                                                src="{% static 'images/lock.png' %}"
+                                                alt="Lock Icon"
+                                            />
+                                            <input
+                                                type="password"
+                                                id="password"
+                                                name="password"
+                                                class="input-field-pass"
+                                                placeholder="Enter a new password"
+                                                disabled
+                                            />
+                                            <button
+                                                type="button"
+                                                id="togglePassword"
+                                                class="toggle-password"
+                                            >
+                                                <img
+                                                    src="{% static 'images/close_eye.png' %}"
+                                                    alt="Toggle Password"
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label
+                                            for="confirm_password"
+                                            class="form-label"
+                                            >Confirm Password</label
+                                        >
+                                        <div class="input-container">
+                                            <img
+                                                class="icon-input"
+                                                src="{% static 'images/lock.png' %}"
+                                                alt="Lock Icon"
+                                            />
+                                            <input
+                                                type="password"
+                                                id="confirm_password"
+                                                name="confirm_password"
+                                                class="input-field-pass"
+                                                placeholder="Re-enter the new password"
+                                                disabled
+                                            />
+                                            <button
+                                                type="button"
+                                                id="toggleConfirmPassword"
+                                                class="toggle-password"
+                                            >
+                                                <img
+                                                    src="{% static 'images/close_eye.png' %}"
+                                                    alt="Toggle Password"
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        window.OPEN_EYE_URL = "{% static 'images/open_eye.png' %}";
+        window.CLOSE_EYE_URL = "{% static 'images/close_eye.png' %}";
+    </script>
+    {% comment %} <script src="{% static 'js/student_profile_edit.js' %}"></script> {% endcomment %}
+</html>

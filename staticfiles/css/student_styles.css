@@ -1,0 +1,413 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-size: 16;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+body{
+    background-color: #F9FAF9;
+}
+.student_main {
+    background-color: #0da66e;
+    height: 100vh;
+    display: flex;
+}
+.Left_Panel {
+    width: 50%;
+    background-color: #0da66e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.student_left_con {
+    text-align: center;
+}
+.Left_Panel img {
+    height: 80px;
+    width: auto;
+}
+.Left_Panel h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin: 16px 0;
+}
+.Left_Panel p {
+    font-size: 20px;
+    color: #f0f8ff;
+    font-family: "Roboto", sans-serif;
+    margin: 10px 0;
+}
+.right_Panel {
+    width: 50%;
+    background-color: white;
+}
+.login_left_icons {
+    display: flex;
+    flex-direction: row;
+}
+.login_left_icons img {
+    height: 20px;
+    width: 20px;
+    margin: 9px 16px;
+}
+.cent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 32px;
+}
+
+/* right login */
+
+.right_Panel {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.login-wrapper {
+    width: 100%;
+    max-width: 28rem;
+}
+
+.logo-title-mobile {
+    display: none;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.icon-shield {
+    font-size: 2.25rem;
+    color: #3182ce;
+    margin-bottom: 1rem;
+}
+
+.title-student-portal {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1a202c;
+}
+
+/* Error Message Container */
+.error-container {
+    margin-bottom: 1.5rem;
+    background-color: #fff5f5;
+    border-left: 4px solid #f56565;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: none;
+}
+
+.error-message {
+    font-size: 0.875rem;
+    color: #c53030;
+}
+
+/* Login Form */
+.form-container {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px 3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    /* padding-right: 3rem; */
+}
+
+.form-spacing > * + * {
+    margin-top: 1.5rem;
+}
+
+/* Form Fields */
+.label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 0.25rem;
+}
+
+.input-container {
+    position: relative;
+}
+
+.icon-input {
+    position: absolute;
+    top: 50%;
+    left: 0.75rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #a0aec0;
+    height: 20px;
+    width: 20px;
+}
+
+.input-field {
+    width: 85%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    color: #1a202c;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #0b8c5d;
+    box-shadow: 0 0 0 2px #bee3f8;
+}
+
+/* Password Toggle */
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 0rem;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #a0aec0;
+}
+
+.toggle-password:hover {
+    color: #718096;
+}
+
+/* Remember Me */
+.remember-me-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.checkbox {
+    height: 1rem;
+    width: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    accent-color: #0b8c5d;
+}
+
+.label-remember {
+    margin-left: 0.5rem;
+    font-size: 0.875rem;
+    color: #718096;
+}
+
+/* Login Button */
+.login-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #0b8c5d;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #0da76e;
+}
+.login-button img {
+    width: 18px;
+    height: 18px;
+    margin: 0 5px;
+}
+
+/* Back to Admin Login */
+.admin_login_link {
+    text-align: center;
+    margin-top: 1rem;
+}
+.icon-img {
+    height: 20px;
+    width: 20px;
+    margin-right: 5px;
+}
+.admin_login_link_a {
+    display: flex;
+    color: #4a5568;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+.admin_login_link_a:hover {
+    color: #3182ce;
+}
+/* Change image on hover */
+/* .admin_login_link_a:hover .icon-img {
+    content: url("../../includes/img/admin_blue.png");
+} */
+
+/* Register Section */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100vh;
+}
+.Register_con {
+    text-align: center;
+}
+.register_p {
+    color: #4a5568;
+    font-size: 14px;
+}
+.register_a {
+    color: #0da66e;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+.register_a:hover {
+    color: #0ec280;
+}
+.panel-content {
+    text-align: center;
+}
+.panel-description {
+    margin-bottom: 2rem !important;
+}
+.feature-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+.feature-item img {
+    width: 20px;
+    height: 20px;
+}
+
+.left-panel {
+    background: linear-gradient(135deg, #047857 0%, #10b981 100%);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    padding: 2rem;
+}
+
+/* Right Panel */
+.right-panel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* padding: 2rem; */
+    background-color: #ffffff;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+}
+.name-group {
+    display: flex;
+    gap: 1px; 
+}
+.relative{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #8ea2be;
+    padding: .6rem .5rem;     
+    border-radius: 8px;
+}
+.relative img{
+    height: 20px;
+    width: 20px;
+    margin-right: 10px;
+    margin-left: 3px;
+}
+.f_l {
+    flex: 1; /* Ensures equal width for the fields */
+    max-width: 50%; /* Adjust the width if needed */
+}
+
+.form-group {
+    margin-bottom: 1.2rem; /* Space between form groups */
+}
+
+.form-group label {
+    color: #1a202c;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.form-group-input[type="text"],
+.form-group-input[type="email"],
+.form-group-input[type="password"] {
+    width: 100%;
+    /* padding: .8rem; */
+    color: #1a202c;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    font-size: 14px;
+}
+/* Autofill styles */
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px white inset !important; /* Match the desired background color */
+    -webkit-text-fill-color: #1a202c !important; /* Text color to match design */
+}
+.form-button{
+    width: 100%;
+    padding: .6rem;
+    border-radius: 8px;
+    color: #fff;
+    background-color: #0da66e;
+    border: none;
+    margin: .5rem 0;
+    font-weight: 600;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+}
+.form-button:hover{
+    background-color: #0b8c5d;
+}
+.form-button img{
+    height: 24px;
+    width: 24px;
+    margin-right: 5px;
+}
+.link{
+    text-align: center;
+    color: #1a202c;
+    font-size: 14px;
+    margin-top: 1rem;
+}
+.link a{
+    color: #0da66e;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+}
+.link a:hover{
+    color: #0b8c5d;
+}
+.toggle-password2{
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #a0aec0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

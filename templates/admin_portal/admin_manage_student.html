@@ -1,0 +1,139 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoteIN | Manage Students</title>
+    <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}">
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function updateStatus(userId, newStatus) {
+            fetch('{% url 'admin_update_student_status' %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        id: userId,
+                        status: newStatus
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Status updated successfully!');
+                    } else {
+                        alert('Error updating status: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="admin_nav">
+        <div class="container">
+            <div class="left_nav_con">
+                <a href="{% url 'admin_dashboard' %}" class="back_text"><img src="{% static 'images/left_arrow_white.png' %}" alt="">Back</a>
+                <h1 class="dashboard-title">VoteIN</h1>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span class="welcome-message">Welcome, 
+                    {% if request.user.is_authenticated and request.user.role == 'admin' and not request.user.first_name and not request.user.last_name %}
+                        Administrator
+                    {% else %}
+                        {{ request.user.get_full_name|default:request.user.email }}
+                    {% endif %}
+                </span>
+                <a href="{% url 'admin_logout' %}" class="logout-link">
+                    <img src="{% static 'images/logout.png' %}" alt="->"> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin_manage_students_container">
+        <div class="admin_manage_students_header_con">
+            <h1 class="registered_h1_text">Manage Students</h1>
+            <form action="{% url 'admin_manage_student' %}" method="get" class="search_form">
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search students..."
+                    value="{{ search_query }}"
+                    class="search_input">
+                <button type="submit" class="search_btn">Search</button>
+            </form>
+        </div>
+        <div class="admin_manage_students_main_con">
+            <table class="paleBlueRows">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Student ID</th>
+                        <th>Email</th>
+                        <th>Full Name</th>
+                        <th>Program</th>
+                        <th>Year Level</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if students %}
+                        {% for student in students %}
+                            <tr>
+                                <td>
+                                    {% if student.photo_url %}
+                                        <img src="{{ student.photo_url.url }}" alt="Profile" style="width:50px;height:50px;">
+                                    {% else %}
+                                        <img src="{% static 'images/user.png' %}" alt="Profile" style="width:50px;height:50px;">
+                                    {% endif %}
+                                </td>
+                                <td>{{ student.student_id }}</td>
+                                <td>{{ student.email }}</td>
+                                <td>{{ student.first_name }} {{ student.last_name }}</td>
+                                <td>{{ student.program|default:'N/A' }}</td>
+                                <td>{{ student.year_level|default:'N/A' }}</td>
+                                <td class="styled-select">
+                                    <select onchange="updateStatus('{{ student.id }}', this.value)">
+                                        <option value="active" {% if student.status == 'active' %}selected{% endif %}>Active</option>
+                                        <option value="inactive" {% if student.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7">No students found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Register - VoteIN</title>
+        <!-- <link rel="stylesheet" href="../../includes/css/student_styles.css"> -->
+        <link rel="stylesheet" href="{% static 'css/student_styles.css' %}" />
+        <style>
+            .profile-picture-preview {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin: 10px auto;
+                display: none;
+                border: 2px solid #ccc;
+            }
+            .file-input-container {
+                text-align: center;
+                margin: 15px 0;
+            }
+            .file-input-label {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #2b6cb0;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                margin-top: 10px;
+            }
+            .file-input-label:hover {
+                background-color: #3182ce;
+            }
+            #photo_url {
+                display: none;
+            }
+            .error-message {
+                color: #dc3545;
+                background-color: #f8d7da;
+                border: 1px solid #f5c6cb;
+                padding: 10px;
+                border-radius: 5px;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <!-- Left Panel - Decorative -->
+            <div class="decorative-panel Left_Panel">
+                <div class="panel-content">
+                    <img
+                        src="{% static 'images/register_white.png' %}"
+                        class="panel-icon"
+                        alt=""
+                    />
+                    <i class="panel-icon"></i>
+                    <h1 class="panel-heading">Create Account</h1>
+                    <p class="panel-description">
+                        Join the student voting community
+                    </p>
+                    <div class="feature-item">
+                        <img
+                            src="{% static 'images/check_white.png' %}"
+                            class="feature-icon"
+                        />
+                        <span class="feature-text"
+                            >Quick and Easy Registration</span
+                        >
+                    </div>
+                    <div class="feature-item">
+                        <img
+                            src="{% static 'images/shield.png' %}"
+                            class="feature-icon"
+                        />
+                        <span class="feature-text"
+                            >Secure Account Creation</span
+                        >
+                    </div>
+                    <div class="feature-item">
+                        <img
+                            src="{% static 'images/vote2.png' %}"
+                            class="feature-icon"
+                        />
+                        <span class="feature-text"
+                            >Access to Student Elections</span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <div class="form-container">
+                    <!-- Registration Form -->
+                    <form
+                        id="registerForm"
+                        method="POST"
+                        action="{% url 'student_register' %}"
+                        enctype="multipart/form-data"
+                    >
+                        {% csrf_token %} {% if error_message %}
+                        <div class="error-message">{{ error_message }}</div>
+                        {% endif %}
+
+                        <!-- Profile Picture Upload -->
+                        <div class="file-input-container">
+                            <div class="profile_con">
+                                <img
+                                    id="profilePreview"
+                                    class="profile-picture-preview"
+                                    alt="Profile Preview"
+                                    src="{% static 'images/user.png' %}"
+                                    style="display: block; margin: 0 auto"
+                                />
+                                <label for="photo_url" class="file-input-label">
+                                    <img
+                                        src="{% static 'images/camera.png' %}"
+                                        alt="Upload Photo"
+                                        style="
+                                            width: 20px;
+                                            margin-right: 5px;
+                                            vertical-align: middle;
+                                        "
+                                    />
+                                    Upload Profile Picture
+                                </label>
+                            </div>
+                            <input
+                                type="file"
+                                id="photo_url"
+                                name="photo_url"
+                                accept="image/jpeg,image/png,image/webp"
+                            />
+                            <p
+                                style="
+                                    font-size: 12px;
+                                    color: #666;
+                                    margin-top: 5px;
+                                "
+                            >
+                                Max size: 2MB. Supported formats: JPEG, PNG,
+                                WebP
+                            </p>
+                        </div>
+
+                        <!-- Student ID -->
+                        <div class="form-group">
+                            <label for="student_id">Student ID</label>
+                            <div class="relative">
+                                <img
+                                    src="{% static 'images/id.png' %}"
+                                    alt=""
+                                />
+                                <input
+                                    type="text"
+                                    id="student_id"
+                                    name="student_id"
+                                    required
+                                    placeholder="Enter your student ID"
+                                    class="form-group-input"
+                                />
+                            </div>
+                        </div>
+                        <div class="name-group">
+                            <!-- First Name -->
+                            <div class="form-group">
+                                <label for="first_name">First Name</label>
+                                <div class="relative">
+                                    <img
+                                        src="{% static 'images/user.png' %}"
+                                        alt="User Icon"
+                                    />
+                                    <input
+                                        type="text"
+                                        id="first_name"
+                                        name="first_name"
+                                        required
+                                        placeholder="Enter your first name"
+                                        class="form-group-input"
+                                    />
+                                </div>
+                            </div>
+
+                            <!-- Last Name -->
+                            <div class="form-group">
+                                <label for="last_name">Last Name</label>
+                                <div class="relative">
+                                    <img
+                                        src="{% static 'images/user.png' %}"
+                                        alt="User Icon"
+                                    />
+                                    <input
+                                        type="text"
+                                        id="last_name"
+                                        name="last_name"
+                                        required
+                                        placeholder="Enter your last name"
+                                        class="form-group-input"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <div class="relative">
+                                <img
+                                    src="{% static 'images/email.png' %}"
+                                    alt=""
+                                />
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    required
+                                    placeholder="Enter your email"
+                                    class="form-group-input"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="relative">
+                                <img
+                                    src="{% static 'images/lock.png' %}"
+                                    alt=""
+                                />
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    required
+                                    placeholder="Create a password"
+                                    class="form-group-input"
+                                />
+                                <button
+                                    type="button"
+                                    id="togglePassword"
+                                    class="toggle-password2"
+                                >
+                                    <img
+                                        src="{% static 'images/close_eye.png' %}"
+                                        alt="Toggle Password"
+                                    />
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-group">
+                            <label for="confirm_password"
+                                >Confirm Password</label
+                            >
+                            <div class="relative">
+                                <img
+                                    src="{% static 'images/lock.png' %}"
+                                    alt=""
+                                />
+                                <input
+                                    type="password"
+                                    id="confirm_password"
+                                    name="confirm_password"
+                                    required
+                                    placeholder="Confirm your password"
+                                    class="form-group-input"
+                                />
+                                <button
+                                    type="button"
+                                    id="toggleConfirmPassword"
+                                    class="toggle-password2"
+                                >
+                                    <img
+                                        src="{% static 'images/close_eye.png' %}"
+                                        alt="Toggle Password"
+                                    />
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="form-button">
+                            <img
+                                src="{% static 'images/register_white2.png' %}"
+                                alt=""
+                            />Create Account
+                        </button>
+
+                        <!-- Login Link -->
+                        <p class="link">
+                            Already have an account?
+                            <a href="{% url 'student_login' %}">Login here</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Profile Picture Preview
+            const photoInput = document.getElementById("photo_url");
+            const profilePreview = document.getElementById("profilePreview");
+
+            photoInput.addEventListener("change", function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Check file size (2MB = 2 * 1024 * 1024 bytes)
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert("File size should not exceed 2MB");
+                        photoInput.value = "";
+                        profilePreview.style.display = "none";
+                        return;
+                    }
+
+                    // Check file type
+                    const validTypes = [
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp",
+                    ];
+                    if (!validTypes.includes(file.type)) {
+                        alert("Only JPEG, PNG, and WebP images are allowed");
+                        photoInput.value = "";
+                        profilePreview.style.display = "none";
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        profilePreview.src = e.target.result;
+                        profilePreview.style.display = "block";
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Toggle Password Visibility for Password Field
+            const togglePassword = document.getElementById("togglePassword");
+            const passwordInput = document.getElementById("password");
+            const togglePasswordImage = togglePassword.querySelector("img");
+
+            togglePassword.addEventListener("click", () => {
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    togglePasswordImage.src =
+                        "{% static 'images/open_eye.png' %}";
+                } else {
+                    passwordInput.type = "password";
+                    togglePasswordImage.src =
+                        "{% static 'images/close_eye.png' %}";
+                }
+            });
+
+            // Toggle Password Visibility for Confirm Password Field
+            const toggleConfirmPassword = document.getElementById(
+                "toggleConfirmPassword"
+            );
+            const confirmPasswordInput =
+                document.getElementById("confirm_password");
+            const toggleConfirmPasswordImage =
+                toggleConfirmPassword.querySelector("img");
+
+            toggleConfirmPassword.addEventListener("click", () => {
+                if (confirmPasswordInput.type === "password") {
+                    confirmPasswordInput.type = "text";
+                    toggleConfirmPasswordImage.src =
+                        "{% static 'images/open_eye.png' %}";
+                } else {
+                    confirmPasswordInput.type = "password";
+                    toggleConfirmPasswordImage.src =
+                        "{% static 'images/close_eye.png' %}";
+                }
+            });
+
+            // Form Validation
+            const form = document.getElementById("registerForm");
+            form.addEventListener("submit", function (e) {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    alert("Passwords do not match!");
+                }
+            });
+        });
+    </script>
+</html>

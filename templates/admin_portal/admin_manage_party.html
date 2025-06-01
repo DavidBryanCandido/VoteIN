@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoteIN | Approve Party Lists</title>
+    <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="admin_nav">
+        <div class="container">
+            <div class="left_nav_con">
+                <a href="{% url 'admin_dashboard' %}" class="back_text"><img src="{% static 'images/left_arrow_white.png' %}" alt="">Back</a>
+                <h1 class="dashboard-title">VoteIN</h1>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span class="welcome-message">Welcome, 
+                    {% if request.user.is_authenticated and request.user.role == 'admin' and not request.user.first_name and not request.user.last_name %}
+                        Administrator
+                    {% else %}
+                        {{ request.user.get_full_name|default:request.user.email }}
+                    {% endif %}
+                </span>
+                <a href="{% url 'admin_logout' %}" class="logout-link">
+                    <img src="{% static 'images/logout.png' %}" alt="->"> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="approve_party_con">
+        <h1 class="approve_party_h1">Approve Party List</h1>
+        <p class="a_p_e">Approve finalized party lists for the election.</p>
+        <div class="grid_approve_card">
+            {% for party_id, party in parties.items %}
+                <form method="POST" action="{% url 'admin_manage_party' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="approve_party_id" value="{{ party_id }}">
+                    <input type="hidden" name="election_id" value="{{ party.election_id|default:'' }}">
+                    <input type="hidden" name="election_title" value="{{ party.election_title|default:'' }}">
+                    <input type="hidden" name="party_members" value='{{ party.members|json_script:"party_members_data" }}'>
+                    <div class="approve_card">
+                        <div class="party_n_e">
+                            <h2 class="party_election_title">{{ party.election_title }}</h2>
+                            <h2 class="party_name_text">{{ party.party_name }}</h2>
+                        </div>
+                        <div class="approve_card_member">
+                            <div class="approve_card_member_con">
+                                {% for member in party.members %}
+                                    <div class="approve_card_inner">
+                                        <div class="party_photo_con">
+                                            <img src="{{ member.photo_url|default:'/static/images/default_user_profile.png' }}" alt="" class="party_photo">
+                                        </div>
+                                        <p class="name_position_ name_">{{ member.first_name }} {{ member.last_name }}</p>
+                                        <p class="name_position_">{{ member.position_name }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="side_btn_con">
+                                <input type="hidden" name="vision" value="{{ party.vision|default:'' }}">
+                                <input type="hidden" name="mission" value="{{ party.mission|default:'' }}">
+                                <button type="button" class="vision_party_btn">View Vision</button>
+                                <button type="button" class="mission_party_btn">View Mission</button>
+                                <button
+                                    class="approve_party_btn"
+                                    type="submit"
+                                    {% if party.status == 'approved' %}disabled title="This party is already approved." {% endif %}>
+                                    Approve
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            {% empty %}
+                <p>No finalized parties to approve.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Vision Modal -->
+    <div id="visionModal" class="v_m_modal" style="display: none;">
+        <div class="v_m_modal_content">
+            <span class="close__btn">&times;</span>
+            <h2 class="party_v_m_h2">Party Vision</h2>
+            <p id="visionContent" class="missionContent_p"></p>
+        </div>
+    </div>
+
+    <!-- Mission Modal -->
+    <div id="missionModal" class="v_m_modal" style="display: none;">
+        <div class="v_m_modal_content">
+            <span class="close__btn">&times;</span>
+            <h2 class="party_v_m_h2">Party Mission</h2>
+            <p id="missionContent" class="missionContent_p"></p>
+        </div>
+    </div>
+
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const visionModal = document.getElementById('visionModal');
+        const missionModal = document.getElementById('missionModal');
+        const visionContent = document.getElementById('visionContent');
+        const missionContent = document.getElementById('missionContent');
+
+        document.querySelectorAll('.vision_party_btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const partyVision = this.closest('.side_btn_con').querySelector('input[name="vision"]').value;
+                visionContent.textContent = partyVision || 'No vision provided.';
+                visionModal.style.display = 'flex';
+            });
+        });
+
+        document.querySelectorAll('.mission_party_btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const partyMission = this.closest('.side_btn_con').querySelector('input[name="mission"]').value;
+                missionContent.textContent = partyMission || 'No mission provided.';
+                missionModal.style.display = 'flex';
+            });
+        });
+
+        document.querySelectorAll('.close__btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                visionModal.style.display = 'none';
+                missionModal.style.display = 'none';
+            });
+        });
+
+        window.addEventListener('click', function(e) {
+            if (e.target === visionModal) visionModal.style.display = 'none';
+            if (e.target === missionModal) missionModal.style.display = 'none';
+        });
+    });
+</script>
+
+</html>

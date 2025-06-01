@@ -1,0 +1,179 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>VoteIN | Create New Election</title>
+        <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}" />
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <nav class="admin_nav">
+            <div class="container">
+                <div class="left_nav_con">
+                    <a href="{% url 'admin_dashboard' %}" class="back_text"
+                        ><img
+                            src="{% static 'images/left_arrow_white.png' %}"
+                            alt=""
+                        />Back</a
+                    >
+                    <h1 class="dashboard-title">VoteIN</h1>
+                </div>
+                <div style="display: flex; align-items: center">
+                    <span class="welcome-message">
+                        Welcome, 
+                        {% if request.user.is_authenticated and request.user.role == 'admin' and not request.user.first_name and not request.user.last_name%}
+                        Administrator {% else %}
+                        {{request.user.get_full_name|default:request.user.email}}
+                        {% endif %}
+                    </span>
+                    <a href="{% url 'admin_logout' %}" class="logout-link">
+                        <img src="{% static 'images/logout.png' %}" alt="->" />
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="new_election_container">
+            <div class="create_election_top_con">
+                <h1 class="page-title">Create Election</h1>
+                <button class="add-position-button">Add Position</button>
+            </div>
+            {% if messages %} {% for message in messages %}
+            <p class="{{ message.tags }} error-message2">{{ message }}</p>
+            {% endfor %} {% endif %}
+            <form method="POST" action="{% url 'admin_create_election' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="election" />
+                <div class="form-group">
+                    <label for="title" class="form-label">Title</label>
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        required
+                        class="form-input t_d"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="description" class="form-label"
+                        >Description</label
+                    >
+                    <textarea
+                        id="description"
+                        name="description"
+                        required
+                        class="form-input t_d"
+                        rows="4"
+                    ></textarea>
+                </div>
+                <div class="form-group">
+                    <div class="form-grid">
+                        <div>
+                            <label for="start_datetime" class="form-label"
+                                >Start Date & Time</label
+                            >
+                            <div class="datetime-wrapper">
+                                <div class="callendar-icon-container">
+                                    <span class="calendar-icon">📅</span>
+                                </div>
+                                <input
+                                    type="date"
+                                    id="start_date"
+                                    name="start_date"
+                                    class="form-input"
+                                    required
+                                />
+                                <input
+                                    type="time"
+                                    id="start_time"
+                                    name="start_time"
+                                    class="form-input"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label for="end_datetime" class="form-label"
+                                >End Date & Time</label
+                            >
+                            <div class="datetime-wrapper">
+                                <div class="callendar-icon-container">
+                                    <span class="calendar-icon">📅</span>
+                                </div>
+                                <input
+                                    type="date"
+                                    id="end_date"
+                                    name="end_date"
+                                    class="form-input"
+                                    required
+                                />
+                                <input
+                                    type="time"
+                                    id="end_time"
+                                    name="end_time"
+                                    class="form-input"
+                                    required
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn-primary">
+                        Create Election
+                    </button>
+                </div>
+            </form>
+
+            <div id="addPositionModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-position-modal">&times;</span>
+                    <h1 class="page-title">Add New Position</h1>
+                    <form
+                        method="POST"
+                        action="{% url 'admin_create_election' %}"
+                    >
+                        {% csrf_token %}
+                        <input
+                            type="hidden"
+                            name="form_type"
+                            value="position"
+                            class="form-input"
+                        />
+                        <div class="form-group">
+                            <label for="id_position_name" class="form-label">
+                                Position Name:
+                            </label>
+                            {{ position_form.position_name }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_description" class="form-label">
+                                Description:
+                            </label>
+                            {{ position_form.description }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_program" class="form-label">
+                                Program:
+                            </label>
+                            {{ position_form.program }}
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn-primary">
+                                Add Position
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script src="{% static 'js/main.js' %}"></script>
+    </body>
+</html>

@@ -1,0 +1,148 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>All Active Elections | VoteIN</title>
+        <link
+            rel="stylesheet"
+            href="{% static 'css/student_dashboard_style.css' %}"
+        />
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <nav class="admin_nav">
+            <div class="container">
+                <div class="back_text_con">
+                    <a href="{% url 'student_dashboard' %}" class="back_text">
+                        <img
+                            src="{% static 'images/left_arrow_white.png' %}"
+                            alt=""
+                        />
+                        Back
+                    </a>
+                    <h1 class="dashboard-title">All Active Election</h1>
+                </div>
+                <div style="display: flex; align-items: center">
+                    <div class="profile_con">
+                        <a href="{% url 'student_profile' %}">
+                            {% if user.photo_url %}
+                            <img
+                                src="{{ user.photo_url.url }}"
+                                alt="Profile Picture"
+                                class="profile_img"
+                            />
+                            {% else %}
+                            <img
+                                src="{% static 'images/user.png' %}"
+                                alt="Default Profile Picture"
+                                class="profile_img"
+                            />
+                            {% endif %}
+                        </a>
+                    </div>
+                    <span class="welcome-message">Welcome, {{ user.first_name }} {{ user.last_name }}</span>
+                    <a href="{% url 'student_logout' %}" class="logout-link">
+                        <img src="{% static 'images/logout.png' %}" alt="->" />
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <!-- Main Content -->
+        <div class="student_dashboard_container">
+            <!-- Grid -->
+            <div class="out_grid">
+                <h1 class="grip_title_h1">All Elections</h1>
+
+                {% if messages %} {% for message in messages %}
+                <div
+                    id="error-message"
+                    style="
+                        margin-bottom: 1rem;
+                        color: red;
+                        font-size: 14px;
+                        font-style: italic;
+                    "
+                >
+                    {{ message }}
+                </div>
+                {% endfor %} {% endif %}
+
+                <div class="grid_container">
+                    {% if elections %} {% for election in elections %}
+                    <div class="grid_card">
+                        <div class="grid_card_in">
+                            <h2 class="grid_title_h2 grid_texts">
+                                {{ election.title }}
+                            </h2>
+                            <div class="date_time_con grid_texts">
+                                <h4>Start Date:</h4>
+                                <p class="date_text">
+                                    {{ election.start_date|date:"F d, Y | h:i A"
+                                    }}
+                                </p>
+                            </div>
+                            <div class="date_time_con grid_texts">
+                                <h4>End Date:</h4>
+                                <p class="date_text">
+                                    {{ election.end_date|date:"F d, Y | h:i A"
+                                    }}
+                                </p>
+                            </div>
+                            <div class="grid_texts status_con">
+                                <h4>Status</h4>
+                                <p
+                                    class="status {{ election.status|lower }} date_text"
+                                >
+                                    {% if election.status == 'scheduled' %}
+                                    Upcoming {% else %} {{
+                                    election.status|capfirst }} {% endif %}
+                                </p>
+                            </div>
+                            <p class="grid_text grid_texts">
+                                {{ election.description }}
+                            </p>
+                            {% if election.is_completed %}
+                            <button class="grid_tag_a disabled" disabled>
+                                Election Ended
+                            </button>
+                            {% elif election.has_voted %}
+                            <button class="grid_tag_a disabled" disabled>
+                                You Voted
+                            </button>
+                            {% else %}
+                            <a
+                                class="grid_tag_a"
+                                href="{% url 'student_election_details' election.id %}"
+                            >
+                                Vote Now<img
+                                    src="{% static 'images/right_arrow_white.png' %}"
+                                    alt=""
+                                />
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %} {% else %}
+                    <div class="no_election">
+                        <p class="no_election_p">There are no elections yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        // Use JavaScript to make the error message disappear after a few seconds
+        setTimeout(function () {
+            const errorMessage = document.getElementById("error-message");
+            if (errorMessage) {
+                errorMessage.style.display = "none";
+            }
+        }, 5000); // 5000 milliseconds = 5 seconds
+    </script>
+</html>

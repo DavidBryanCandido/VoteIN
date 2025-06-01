@@ -1,0 +1,153 @@
+{% load static %}
+{% load authentication_extras %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoteIN | Manage Election Result</title>
+    <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}">
+
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="admin_nav">
+        <div class="container">
+            <div class="left_nav_con">
+                <a href="{% url 'admin_dashboard' %}" class="back_text"><img src="{% static 'images/left_arrow_white.png' %}" alt="">Back</a>
+                <h1 class="dashboard-title">VoteIN</h1>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span class="welcome-message">Welcome, 
+                    {% if request.user.is_authenticated and request.user.role == 'admin' and not request.user.first_name and not request.user.last_name %}
+                        Administrator
+                    {% else %}
+                        {{ request.user.get_full_name|default:request.user.email }}
+                    {% endif %}
+                </span>
+                <a href="{% url 'admin_logout' %}" class="logout-link">
+                    <img src="{% static 'images/logout.png' %}" alt="->"> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin_manage_result_container">
+        {% if election %}
+            <div class="admin_manage_result_top">
+                <div class="election_title_h1_con">
+                    <h1 class="election_title_h1">{{ election.title }}</h1>
+                </div>
+                <div class="election_grid_stuff">
+                    <div>
+                        <p class="start_date_p tag_P">Start: {{ election.start_date|date:'Y-m-d h:i A' }}</p>
+                        <p class="end_date_p tag_P">End: {{ election.end_date|date:'Y-m-d h:i A' }}</p>
+                    </div>
+                    <div>
+                        <p class="show_election_status tag_P">Status: {{ election.status }}</p>
+                        <button class="view-final-result-btn tag_P">Winner</button>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="admin_manage_result_top">
+                <p class="error-message">Election not found.</p>
+            </div>
+        {% endif %}
+
+
+        <div class="admin_manage_result_bottom">
+            {% for position in positions %}
+                <div class="position_container">
+                    <h1 class="position_h1">{{ position.position_name }}</h1>
+                    <div class="candidates_container">
+                        {% if candidates_by_position|get_item:position.id %}
+                            {% for candidate in candidates_by_position|get_item:position.id %}
+                                <div class="candidate_container">
+                                    <div class="can_par_container">
+                                        <p class="candidate_name can_par">{{ candidate.candidate_name }}</p>
+                                        <p class="party_name can_par">{{ candidate.party_name }}</p>
+                                        <p class="party_vote_total can_par">Votes: {{ candidate.total_votes }}</p>
+                                    </div>
+                                    <div class="moving_bar_container">
+                                        <div class="moving_bar" style="width: {{ candidate.vote_percentage|floatformat:2 }}%;"></div>
+                                        <p class="vote_percentage">{{ candidate.vote_percentage|floatformat:2 }}%</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="no_candidates">No candidates available for this position.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+    <div id="winnerModal" class="result_modal">
+        <div class="modal_content">
+            <span class="close_btn">&times;</span>
+            <div class="modal_header">
+                <div class="modal_img_con">
+                    <img src="{% static 'images/modal_img.png' %}" alt="" class="modal_img">
+                </div>
+                <h2 class="modal_election_title">{{ election.title|default:'Election Title' }}</h2>
+            </div>
+            <div class="winner_details_pyramid">
+                {% for position in positions %}
+                    {% if candidates_by_position|get_item:position.id %}
+                        {% with winner=candidates_by_position|get_item:position.id|first %}
+                            {% if forloop.first %}
+                                <div class="winner_top">
+                            {% else %}
+                                <div class="winner_bottom">
+                            {% endif %}
+                                <div class="winner_info {% if forloop.first %}win_top{% else %}win_bottom{% endif %}">
+                                    <div class="winner_img_con">
+                                        <img
+                                            src="{% if winner.photo_url %}{{ winner.photo_url }}{% else %}{% static 'images/default_user_profile2.png' %}{% endif %}"
+                                            alt="{{ winner.candidate_name|default:'N/A' }}'s Photo"
+                                            class="winner_img" />
+                                    </div>
+
+                                    <div class="winner_name_party_con">
+                                        <p class="winner_position_p winner_text">{{ position.position_name }}</p>
+                                        <h3 class="winner_name winner_text">
+                                            {% if winner.total_votes == 0 %}N/A{% else %}{{ winner.candidate_name }}{% endif %}
+                                        </h3>
+                                        <p class="winner_party winner_text">
+                                            {% if winner.total_votes == 0 %}N/A{% else %}{{ winner.party_name }}{% endif %}
+                                        </p>
+                                        <p class="vote_count winner_text">{{ winner.total_votes }} Votes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endwith %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    document.querySelector('.view-final-result-btn').addEventListener('click', function() {
+        document.getElementById('winnerModal').style.display = 'block';
+    });
+
+    document.querySelector('.close_btn').addEventListener('click', function() {
+        document.getElementById('winnerModal').style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('winnerModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+</script>
+
+</html>

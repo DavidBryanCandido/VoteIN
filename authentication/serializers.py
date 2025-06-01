@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import CustomUser, Position, PartyList, Election
 from PIL import Image
 import io
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -46,6 +48,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('confirm_password')
         photo = validated_data.pop('photo_url', None)
+        
+        # Set role based on email domain
+        role = 'admin' if validated_data['email'].endswith('@votein.com') else 'student'
+        
         user = CustomUser.objects.create_user(
             student_id=validated_data['student_id'],
             first_name=validated_data['first_name'],
@@ -53,6 +59,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=validated_data['password'],
             username=validated_data['student_id'],
+            role=role  # Set the role here
         )
         if photo:
             user.photo_url = photo
@@ -73,3 +80,9 @@ class ElectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Election
         fields = '__all__'
+
+class LoginSerializer(TokenObtainPairSerializer):
+    pass
+
+class TokenRefreshSerializer(serializers.Serializer):
+    refresh = serializers.CharField()

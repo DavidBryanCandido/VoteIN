@@ -245,9 +245,9 @@ body{
     color: #3182ce;
 }
 /* Change image on hover */
-/* .admin_login_link_a:hover .icon-img {
+.admin_login_link_a:hover .icon-img {
     content: url("../../includes/img/admin_blue.png");
-} */
+}
 
 /* Register Section */
 .container {
